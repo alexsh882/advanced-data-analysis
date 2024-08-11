@@ -151,7 +151,36 @@ def main():
     create_table(connection)
     read_data_from_csv_and_seed_database(connection)
 
-    
+    data = get_employee_performance(connection)
+    df = pd.DataFrame(data)
+
+    # Media, mediana y desviación estándar del performance_score.
+    print("\n")
+    print("Media, mediana y desviación estándar del performance_score: ")
+    print(statistics(df, 3))
+
+    # Media, mediana y desviación estándar del salary.
+    print("\n")
+    print("Media, mediana y desviación estándar del salary: ")
+    print(statistics(df, 5))
+
+    # Número total de empleados por departamento.
+    print("\n")
+    print("Número total de empleados por departamento: ")
+    print(employee_quantity_per_department(df))
+
+    # Correlación entre years_with_company y performance_score.
+    print("\n")
+    print("Correlación entre years_with_company y performance_score: ")
+    print(df[[4, 3]].corr(numeric_only=True))
+
+    # Correlación entre salary y performance_score.
+    print("\n")
+    print("Correlación entre salary y performance_score: ")
+    print(df[[5, 3]].corr(numeric_only=True))
+   
+
+
     connection.close()
 
 if __name__ == "__main__":
