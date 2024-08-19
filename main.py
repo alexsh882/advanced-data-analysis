@@ -29,8 +29,6 @@ def get_connection():
             print("Credenciales incorrectas")
         else:
             print(err)
-    else:
-        connection.close()
 
 
 def create_database(connection):
@@ -89,9 +87,8 @@ def insert_data(connection, data):
         connection.commit()
         print(cursor.rowcount, "Registros insertados correctamente")
     except Error as err:
-        cursor.close()
-        connection.close()
-        print('insert_data: ' + err)
+
+        print("insert_data: " + err)
 
 
 def read_data_from_csv_and_seed_database(connection):
@@ -115,7 +112,7 @@ def read_data_from_csv_and_seed_database(connection):
                 )
             insert_data(connection, data)
     except Error as err:
-        print('read_data_from_csv_and_seed_database: ' + err)
+        print("read_data_from_csv_and_seed_database: " + err)
 
 
 def get_employee_performance(connection):
@@ -130,20 +127,37 @@ def get_employee_performance(connection):
         )
         return cursor.fetchall()
     except Error as err:
-        print('get_employee_performance: ' + err)
+        print("get_employee_performance: " + err)
 
 
 def statistics(df, column):
 
     data = pd.DataFrame()
-    
-    data['Media'] = df.groupby([2])[column].mean()
-    data['Mediana'] = df.groupby([2])[column].median()
-    data['DE'] = df.groupby([2])[column].std()
+
+    data["Media"] = df.groupby([2])[column].mean()
+    data["Mediana"] = df.groupby([2])[column].median()
+    data["DE"] = df.groupby([2])[column].std()
     return data
+
 
 def employee_quantity_per_department(df):
     return df.groupby([2])[1].count()
+
+
+def histogram_performance_score_by_department(df):
+    df.hist(column=3, by=2, bins=10, figsize=(10, 10))
+    plt.suptitle("Histograma de performance_score por departamento")
+    plt.show()
+
+def dispersion_graph_years_with_company_vs_performance_score(df):
+    df.plot.scatter(x=4, y=3)
+    plt.title("Gráfica de dispersión de years_with_company vs performance_score")
+    plt.show()
+
+def dispersion_graph_salary_vs_performance_score(df):
+    df.plot.scatter(x=5, y=3)
+    plt.title("Gráfica de dispersión de salary vs performance_score")
+    plt.show()
 
 def main():
     connection = get_connection()
@@ -178,10 +192,18 @@ def main():
     print("\n")
     print("Correlación entre salary y performance_score: ")
     print(df[[5, 3]].corr(numeric_only=True))
-   
 
+    # Histograma del performance_score.
+    histogram_performance_score_by_department(df)
+
+    # Gráfica de dispersión de years_with_company vs performance_score.
+    dispersion_graph_years_with_company_vs_performance_score(df)
+
+    # Gráfica de dispersión de salary vs performance_score.
+    dispersion_graph_salary_vs_performance_score(df)
 
     connection.close()
+
 
 if __name__ == "__main__":
     main()
